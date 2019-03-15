@@ -1,0 +1,103 @@
+{% extends "home.html" %}
+{% block title %}Maturitní kánon - autoři{% endblock %}
+{% block body %}
+    <h2>Autoři</h2>
+    <table border="1">
+        {% for author in data["authors"] %}
+            <tr>
+                <td>{{ author["author_id"] }}</td>
+                <td><input type="text" style="width: 250px" id="name-{{ author["author_id"] }}"
+                           value="{{ author["author_name"] }}"/></td>
+                <td>
+                    <button id="save-{{ author["author_id"] }}">Přejmenovat</button>
+                </td>
+                <td>
+                    <button id="delete-{{ author["author_id"] }}">Smazat</button>
+                </td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="5">
+                <button id="addAuthor">Přidat autora</button>
+            </td>
+        </tr>
+    </table>
+    <p>Autor musí být nastaven i u knih, které autora nemají, <br/>
+        (například Evangelium sv. Lukáše) <br/>
+        proto je možné vytvořit autora, jehož jméno bude začínat<br/>
+        "skryt" a ve výpisu knih se kniha objeví jako bez autora.<br/>
+        Tento autor ale nemůže mít více jak dvě knihy, jinak nepůjdou<br/>
+        všechny vybrat.</p>
+
+    <script>
+        $('button').click(function (e) {
+            var args = e.target.id.split("-");
+            var data = {};
+            if (args[0] === "addAuthor") {
+                addAuthor(data);
+                return;
+            }
+
+            var id = args[1];
+            data["authorId"] = id;
+            data["authorName"] = $('#name-' + id)[0].value;
+
+            if (args[0] === "save") {
+                saveAuthor(data);
+            } else if (args[0] === "delete") {
+                deleteAuthor(data);
+            }
+
+        });
+
+        function saveAuthor(data) {
+
+
+            $.post("/api/modifyAuthor", data, function (r) {
+                console.log(r);
+                if (r === "OK") {
+                    alert("Uloženo")
+                    //location.reload();
+                } else {
+                    alert("Nepodařilo se uložit\n" + r);
+                }
+            })
+                .fail(function () {
+                    alert("Nepodařilo se odeslat požadavek na server");
+                });
+
+
+        }
+
+        function deleteAuthor(data) {
+            if (confirm("Opravdu chcete smazat autora " + data["authorName"])) {
+                $.post("/api/deleteAuthor", data, function (r) {
+                    console.log(r);
+                    if (r === "OK") {
+                        alert("Smazáno")
+                        location.reload();
+                    } else {
+                        alert("Nepodařilo se smazat\n" + r);
+                    }
+                })
+                    .fail(function () {
+                        alert("Nepodařilo se odeslat požadavek na server");
+                    });
+
+            }
+        }
+
+        function addAuthor(data) {
+            $.post("/api/addAuthor", data, function (r) {
+                console.log(r);
+                location.reload();
+
+            })
+                .fail(function () {
+                    alert("Nepodařilo se odeslat požadavek na server");
+                });
+        }
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends "home.html" %}
+{% block title %}Maturitní kánon - knihy{% endblock %}
+{% block body %}
+    <table border="1">
+        {% for book in data["books"] %}
+
+            <tr>
+                <td><input type="number" value="{{ book["book_order"] }}" style="width: 35px"
+                           id="order-{{ book["book_id"] }}"></td>
+                <td><select style="width: 150px" id="author-{{ book["book_id"] }}">
+                    {% for author in data["authors"] %}
+                        <option value="{{ author["author_id"] }}"
+                                {% if author["author_id"] == book["author_id"] %} selected {% endif %}
+                        >{{ author["author_name"] }}</option>
+                    {% endfor %}
+                </select>
+                </td>
+                <td><input type="text" value="{{ book["book_name"] }}" style="width: 450px"
+                           id="name-{{ book["book_id"] }}"></td>
+                <td><select id="genre-{{ book["book_id"] }}">
+                    {% for genre in data["genres"] %}
+                        <option value="{{ genre["genre_id"] }}"
+                                {% if genre["genre_id"]  == book["book_genre"] %} selected {% endif %}
+                                style="color: {{ genre["color"]   | safe }}"
+                        >{{ genre["genre_name"] }}</option>
+                    {% endfor %}
+                </select>
+
+                </td>
+
+                <td>
+                    <select id="season-{{ book["book_id"] }}" style="width: 150px" dir="rtl">
+                        {% for season in data["seasons"] %}
+                            <option value="{{ season["season_id"] }}"
+                                    {% if season["season_id"]  == book["book_season"] %} selected {% endif %}
+                            >{{ season["season_name"] }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+
+                <td>
+                    <button id="save-{{ book["book_id"] }}" class="saveButton">Uložit</button>
+                </td>
+                <td>
+                    <button id="delete-{{ book["book_id"] }}">Smazat</button>
+                </td>
+            </tr>
+        {% endfor %}
+
+        <tr>
+            <th colspan="5">
+                <button id="addBook">Přidat tolik knih:</button>
+                <input id="addBookCount" type="number" value="1">
+            </th>
+            <th colspan="3">
+                <button id="saveAll">Uložit vše</button>
+
+            </th>
+        </tr>
+    </table>
+
+    <script>
+        $('button').click(function (e) {
+            var args = e.target.id.split("-");
+            var data = {};
+            if (args[0] === "addBook") {
+                data["count"] = $('#addBookCount')[0].value
+                addBook(data);
+                return;
+            }
+            var ids = Array();
+            if (args[0] === "saveAll") {
+                alert("Toto může chvíli trvat. Vyčkejte alespoň 15 sekund po zavření této zprávy, než budete pokračovat v úpravách");
+                args[0] = "save";
+                $(".saveButton").each(function (el) {
+                    ids.push(this.id.split("-")[1]);
+                });
+            } else {
+                ids.push(args[1])
+            }
+            ids.forEach(function (id) {
+
+                data["bookId"] = id;
+                data["bookOrder"] = $('#order-' + id)[0].value;
+                data["bookAuthor"] = $('#author-' + id)[0].value;
+                data["bookName"] = $('#name-' + id)[0].value;
+                data["bookGenre"] = $('#genre-' + id)[0].value;
+                data["bookSeason"] = $('#season-' + id)[0].value;
+
+                if (args[0] === "save") {
+                    saveBook(data, false);
+                } else if (args[0] === "delete") {
+                    deleteBook(data);
+                }
+            });
+        });
+
+        function saveBook(data, showOk = true) {
+
+
+            $.post("/api/modifyBook", data, function (r) {
+                console.log(r);
+                if (r === "OK") {
+                    if (showOk) {
+                        alert("Uloženo")
+                        //location.reload();
+                    }
+                } else {
+                    alert("Nepodařilo se uložit\n" + r);
+                }
+            })
+                .fail(function () {
+                    alert("Nepodařilo se odeslat požadavek na server");
+                });
+
+
+        }
+
+        function deleteBook(data) {
+            if (confirm("Opravdu chcete smazat knihu " + data["bookName"])) {
+                $.post("/api/deleteBook", data, function (r) {
+                    console.log(r);
+                    if (r === "OK") {
+                        alert("Smazáno")
+                        location.reload();
+                    } else {
+                        alert("Nepodařilo se smazat\n" + r);
+                    }
+                })
+                    .fail(function () {
+                        alert("Nepodařilo se odeslat požadavek na server");
+                    });
+
+            }
+        }
+
+        function addBook(data) {
+            $.post("/api/addBook", data, function (r) {
+                console.log(r);
+                location.reload();
+
+            })
+                .fail(function () {
+                    alert("Nepodařilo se odeslat požadavek na server");
+                });
+        }
+
+    </script>
+
+{% endblock %}

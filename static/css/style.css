@@ -1,0 +1,28 @@
+
+.main-content {
+    box-sizing: border-box;
+    width: 100%;
+
+}
+
+.sidebar {
+    box-sizing: border-box;
+    width: 100%;
+
+}
+
+@media screen and (min-width: 1024px) {
+    .main-content {
+        width: 75%;
+        float: left;
+    }
+
+    .sidebar {
+        width: 24%;
+        float: right;
+
+    }
+    .sidebar_content {
+        position: fixed;
+    }
+}
