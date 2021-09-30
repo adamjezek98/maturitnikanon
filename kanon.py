@@ -22,7 +22,7 @@ class Kanon():
                 {"genre_id": 2, "genre_name": "Poezie", "color": "#1b2ec5"},
                 {"genre_id": 3, "genre_name": "Drama", "color": "#865a15"}]
 
-    def check_books(self, data):
+    def check_books(self, data, request):
         bookIds = []
         rules = {
             "authorMax2": True,  # max 2 dila od jednoho autora
@@ -38,8 +38,9 @@ class Kanon():
 
         if not "checked[]" in data.keys():
             return self.process_rules_to_string(rules, 0)
-        for b in data["checked[]"]:
+        for b in request.form.getlist("checked[]"):
             bookIds.append(int(b))
+        print(bookIds)
         if len(bookIds) == 0:
             return self.process_rules_to_string(rules, 0)
 

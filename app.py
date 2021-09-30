@@ -54,7 +54,7 @@ def api(path):
     elif path == "addAuthor":
         return k.dbtool.add_author(data)
     elif path == "checkBooks":
-        return k.check_books(data)
+        return k.check_books(data, request)
     return "NONE"
 
 

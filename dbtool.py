@@ -69,9 +69,9 @@ class DbTool:
             self.c.execute("""UPDATE books 
                         SET book_order = ?, book_author = ?, book_name = ?, book_genre = ?, book_season = ? 
                         WHERE book_id = ?""",
-                           [data["bookOrder"][0], data["bookAuthor"][0], data["bookName"][0],
-                            data["bookGenre"][0], data["bookSeason"][0],
-                            data["bookId"][0]])
+                           [data["bookOrder"], data["bookAuthor"], data["bookName"],
+                            data["bookGenre"], data["bookSeason"],
+                            data["bookId"]])
             self.db.commit()
 
             return "OK"
@@ -81,7 +81,7 @@ class DbTool:
     def delete_book(self, data):
         try:
             self.c.execute("""DELETE FROM books  WHERE book_id = ?""",
-                           [data["bookId"][0], ])
+                           [data["bookId"], ])
             self.db.commit()
             return "OK"
         except Exception as e:
@@ -93,7 +93,7 @@ class DbTool:
         firstauthor = self.c.fetchall()[0]["author_id"]
         self.c.execute("""SELECT book_order fROM books ORDER BY book_order DESC LIMIT 1""")
         booksCount = self.c.fetchall()[0][0]
-        for i in range(int(data["count"][0])):
+        for i in range(int(data["count"])):
             self.c.execute("""INSERT INTO books (book_season, book_genre, book_author, book_order, book_name)
                           VALUES (1, 1, ?, ?, "===NOVÁ KNIHA===")""",
                            [firstauthor, booksCount + 1 + i])
@@ -107,7 +107,7 @@ class DbTool:
             self.c.execute("""UPDATE authors 
                             SET author_name = ?
                             WHERE author_id = ?""",
-                           [data["authorName"][0], data["authorId"][0]])
+                           [data["authorName"], data["authorId"]])
             self.db.commit()
             return "OK"
         except Exception as e:
@@ -116,7 +116,7 @@ class DbTool:
     def delete_author(self, data):
         try:
             self.c.execute("""DELETE FROM authors  WHERE author_id = ?""",
-                           [data["authorId"][0], ])
+                           [data["authorId"], ])
             self.db.commit()
             return "OK"
         except Exception as e:

@@ -52,7 +52,7 @@
             var data = {};
             data["checked"] = getAllChecked();
             $("#books")[0].value = data["checked"];
-            console.log(data["checked"]);
+            console.log(data);
             $.post("/api/checkBooks", data, function (response) {
                 $('#rulesResult').html(response);
                 console.log(response);

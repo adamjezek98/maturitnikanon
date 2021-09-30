@@ -1,2 +1,2 @@
 class Config():
-    dbpath = "/home/adam/maturitnikanon/db.sqlite3"
+    dbpath = "db.sqlite3"
