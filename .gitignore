@@ -1,1 +1,4 @@
 /exports/
+/env/
+/__pycache__/
+/.idea/
