@@ -10,7 +10,7 @@
                 {% for book in season["books"] %}
                     {% if book["book_name"] != "===NOVÁ KNIHA===" %}
                         <tr>
-                            <td style="width: 50px;"><input type="checkbox"
+                            <td style="width: 60px;"><input type="checkbox"
                                                             id="{{ book["book_id"] }}"> {{ book["book_order"] }}.
                             </td>
                             <td style="max-width: 250px;">{{ book["author_name"] }}</td>
